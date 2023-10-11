@@ -1,10 +1,10 @@
 #include <Arduino.h>
 
 // --------------------------- MOTORS 
-#define M1_IN1 33
-#define M1_IN2 25 
+#define M1_IN1 25
+#define M1_IN2 33 
 #define M2_IN1 26
-#define M2_IN2 27 
+#define M2_IN2 27
 
 // --------------------------- PWM
 #define CHANNEL_M1_IN1 1
