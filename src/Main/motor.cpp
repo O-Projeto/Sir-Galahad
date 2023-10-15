@@ -1,6 +1,6 @@
 #include "motor.h"
 
-//! considera que IN1 e positivo
+//! considera que IN1 é positivo
 
 motor::motor(int inA, int inB, int channelA, int channelB)
 {
@@ -24,9 +24,9 @@ void motor::setup()
     ledcAttachPin(IN_B, CHANNEL_B);
 }
 
-void motor::cmd(int pwm)
+void motor::cmd(int speed )
 {
-    PWM = pwm; 
+    PWM = map(speed,-MAX_SPEED,MAX_SPEED,-MAX_PWM,MAX_PWM); 
 
 
     // --------------------------- saturation

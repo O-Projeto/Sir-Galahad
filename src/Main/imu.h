@@ -1,108 +1,224 @@
-#include "Main/config.h"
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <Adafruit_BMP280.h>
+#include <utility/imumaths.h>
+#include <SPI.h>
+#include "config.h"
 
-#include "Wire.h"
-#include "DFRobot_BMP280.h"
-#include "DFRobot_BNO055.h"
+ // Possible vector values can be:
+ // - VECTOR_ACCELEROMETER - m/s^2
+ // - VECTOR_MAGNETOMETER - uT
+ // - VECTOR_GYROSCOPE - rad/s
+ // - VECTOR_EULER - degrees
+ // - VECTOR_LINEARACCEL - m/s^2
+ // - VECTOR_GRAVITY - m/s^2
 
-// object class
-typedef DFRobot_BNO055_IIC    BNO; 
-typedef DFRobot_BMP280_IIC    BMP;    
+float acceleration[3];
+float acceleration_g[3]; 
+float orientation[3];
+float magnetic[3]; 
+float rotation[3];
+float quaternion[4];
 
-// i2c connection
-BNO   bno(&Wire, 0x28);    // input TwoWire interface and IIC address
-BMP   bmp(&Wire, BMP::eSdoLow);
 
-#define SEA_LEVEL_PRESSURE    1021.0f   // sea level pressure (pressão atmosferica)
+/* Set the delay between fresh samples */
+uint16_t BNO055_SAMPLERATE_DELAY_MS = 100;
 
-// orientation vars 
-float linear_acceleration[3];           // [x, y, z]
+Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28, &Wire);
+Adafruit_BMP280 bmp; // use I2C interface
 
-void BNO_BMP_setup()
-{
-    pinMode(LED_BUILD_IN, OUTPUT);
-    digitalWrite(LED_BUILD_IN, LOW);
+Adafruit_Sensor *bmp_temp = bmp.getTemperatureSensor();
+Adafruit_Sensor *bmp_pressure = bmp.getPressureSensor();
 
-    bno.reset();
-    bmp.reset();
+void bno_setup() {
 
-    while(bno.begin() != BNO::eStatusOK) {
-        Serial.println("bno begin faild");
-        bno.reset();
+    /* Initialise the sensor */
+    while (!bno.begin())
+    {
+        Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+        // while (1);
     }
+    digitalWrite(LED_BUILD_IN, HIGH); 
 
-    while(bmp.begin()!= BMP::eStatusOK) {
-        Serial.println("bmp begin failed");
-        bmp.reset();
-    }
-
-    Serial.println("bno begin success");
-    Serial.println("bmp begin success");
-
-    digitalWrite(LED_BUILD_IN, HIGH);
-
+    uint8_t system, gyro, accel, mag = 0;
+    bno.getCalibration(&system, &gyro, &accel, &mag);
+    Serial.println();
+    Serial.print("Calibration: Sys=");
+    Serial.print(system);
+    Serial.print(" Gyro=");
+    Serial.print(gyro);
+    Serial.print(" Accel=");
+    Serial.print(accel);
+    Serial.print(" Mag=");
+    Serial.println(mag);
 }
 
-// #define printAxisData(sAxis) \
-//   Serial.print(" x: "); \
-//   Serial.print(sAxis.x); \
-//   Serial.print(" y: "); \
-//   Serial.print(sAxis.y); \
-//   Serial.print(" z: "); \
-//   Serial.println(sAxis.z)
+void bmp_setup() {
+    /* Initialise the sensor */
+    while (!bmp.begin()){
+        Serial.println("Ooops, no BMP280 detected ... Check your wiring or I2C ADDR!");
+    } 
+    digitalWrite(LED_BUILD_IN, HIGH); 
 
-float* BNO_linear_acceleration(){
-    BNO::sAxisAnalog_t linear_accel; 
-
-    linear_accel = bno.getAxis(BNO::eAxisLia); 
-
-    linear_acceleration[1] = linear_accel.x; 
-    linear_acceleration[2] = linear_accel.y; 
-    linear_acceleration[3] = linear_accel.z;
-
-    Serial.print("Linear acceleration:"); 
-    Serial.print(linear_accel.x); 
-    Serial.print("\t ");
-    Serial.print(linear_accel.y); 
-    Serial.print("\t ");
-    Serial.print(linear_accel.z); 
-    Serial.print("\t ");
+    bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     /* Operating Mode. */
+                    Adafruit_BMP280::SAMPLING_X2,     /* Temp. oversampling */
+                    Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */
+                    Adafruit_BMP280::FILTER_X16,      /* Filtering. */
+                    Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
     
-    return linear_acceleration; 
+    bmp_temp->printSensorDetails();
 }
 
-// void loop()
-// {
-//   BNO::sAxisAnalog_t   sAccAnalog, sMagAnalog, sGyrAnalog, sLiaAnalog, sGrvAnalog;
-//   BNO::sEulAnalog_t    sEulAnalog;
-//   BNO::sQuaAnalog_t    sQuaAnalog;
-//   sAccAnalog = bno.getAxis(BNO::eAxisAcc);    // read acceleration
-//   sMagAnalog = bno.getAxis(BNO::eAxisMag);    // read geomagnetic
-//   sGyrAnalog = bno.getAxis(BNO::eAxisGyr);    // read gyroscope
-//   sLiaAnalog = bno.getAxis(BNO::eAxisLia);    // read linear acceleration
-//   sGrvAnalog = bno.getAxis(BNO::eAxisGrv);    // read gravity vector
-//   sEulAnalog = bno.getEul();                  // read euler angle
-//   sQuaAnalog = bno.getQua();                  // read quaternion
-//   Serial.println();
-//   Serial.println("############################# BNO DATA PRINT BEGIN ######################################");
-//   Serial.print("acc analog: (unit mg)       "); printAxisData(sAccAnalog);
-//   Serial.print("mag analog: (unit ut)       "); printAxisData(sMagAnalog);
-//   Serial.print("gyr analog: (unit dps)      "); printAxisData(sGyrAnalog);
-//   Serial.print("lia analog: (unit mg)       "); printAxisData(sLiaAnalog);
-//   Serial.print("grv analog: (unit mg)       "); printAxisData(sGrvAnalog);
-//   Serial.print("eul analog: (unit degree)   "); Serial.print(" head: "); Serial.print(sEulAnalog.head); Serial.print(" roll: "); Serial.print(sEulAnalog.roll);  Serial.print(" pitch: "); Serial.println(sEulAnalog.pitch);
-//   Serial.print("qua analog: (no unit)       "); Serial.print(" w: "); Serial.print(sQuaAnalog.w); printAxisData(sQuaAnalog);
-//   Serial.println("############################# BNO DATA PRINT BEGIN ######################################");
+// ACCELERATION - m/s^2
+float* get_linear_acceleration_with_gravity(){
 
-//   float   temp = bmp.getTemperature();
-//   uint32_t    press = bmp.getPressure();
-//   float   alti = bmp.calAltitude(SEA_LEVEL_PRESSURE, press);
+     /* Get a new sensor event */
+    sensors_event_t event;
+    bno.getEvent(&event, Adafruit_BNO055::VECTOR_GRAVITY);
 
-//   Serial.println();
-//   Serial.println("############################# BMP DATA PRINT BEGIN ######################################");
-//   Serial.print("temperature (unit Celsius): "); Serial.println(temp);
-//   Serial.print("pressure (unit pa):         "); Serial.println(press);
-//   Serial.print("altitude (unit meter):      "); Serial.println(alti);
-//   Serial.println("############################# BMP DATA PRINT BEGIN ######################################");
+    acceleration_g[0] = event.acceleration.x;
+    acceleration_g[1] = event.acceleration.y;
+    acceleration_g[2] = event.acceleration.z;
 
-//   delay(500);
-// }
+    Serial.print("Aceleração (considerando gravidade): ");
+    Serial.print("x = ");
+    Serial.print(acceleration_g[0]);
+    Serial.print("   |   y = "); 
+    Serial.print(acceleration_g[1]);
+    Serial.print("   |   z = "); 
+    Serial.println(acceleration_g[2]);
+  
+    return acceleration_g; 
+}
+
+// ACCELERATION - m/s^2
+float* get_linear_accel_without_gravity(){
+
+     /* Get a new sensor event */
+    sensors_event_t event;
+    bno.getEvent(&event, Adafruit_BNO055::VECTOR_LINEARACCEL);
+
+    acceleration[0] = event.acceleration.x;
+    acceleration[1] = event.acceleration.y;
+    acceleration[2] = event.acceleration.z;
+
+    Serial.print("Aceleração (considerando gravidade): ");
+    Serial.print("x = ");
+    Serial.print(acceleration[0]);
+    Serial.print("   |   y = "); 
+    Serial.print(acceleration[1]);
+    Serial.print("   |   z = "); 
+    Serial.println(acceleration[2]);
+  
+    return acceleration; 
+}
+
+// ORIENTATION - radians
+float* get_euler_angles(){
+
+    /* Get a new sensor event */
+    sensors_event_t orientationData;
+    bno.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
+
+    orientation[0] = orientationData.orientation.x * (3.141592 / 180);
+    orientation[1] = orientationData.orientation.y * (3.141592 / 180);
+    orientation[2] = orientationData.orientation.z * (3.141592 / 180);
+
+    // Serial.print("Ângulos de euler: ");
+    // Serial.print("pitch = ");
+    // Serial.print(orientation[0]);
+    // Serial.print("   |   roll = "); 
+    // Serial.print(orientation[1]);
+    // Serial.print("   |   yaw = "); 
+    // Serial.println(orientation[2]);
+
+    return orientation; 
+}
+
+// MAGNETIC FIELD - uT
+float* get_magnetic_orientation() {
+
+    /* Get a new sensor event */
+    sensors_event_t event;
+    bno.getEvent(&event, Adafruit_BNO055::VECTOR_MAGNETOMETER);
+
+    magnetic[0] = event.magnetic.x;
+    magnetic[1] = event.magnetic.y;
+    magnetic[2] = event.magnetic.z;
+
+    Serial.print("Orientação campo magnetico: ");
+    Serial.print("x = ");
+    Serial.print(magnetic[0]);
+    Serial.print("   |   y = "); 
+    Serial.print(magnetic[1]);
+    Serial.print("   |   z = "); 
+    Serial.println(magnetic[2]);
+
+    return magnetic; 
+}
+
+// GYROSCOPE ROTATION - rad/s  
+float* get_angular_vel(){
+
+    /* Get a new sensor event */
+    sensors_event_t event;
+    bno.getEvent(&event, Adafruit_BNO055::VECTOR_GYROSCOPE);
+
+    rotation[0] = event.gyro.x;
+    rotation[1] = event.gyro.y;
+    rotation[2] = event.gyro.z;
+
+    Serial.print("Velocidade angular: ");
+    Serial.print("x = ");
+    Serial.print(rotation[0]);
+    Serial.print("   |   y = "); 
+    Serial.print(rotation[1]);
+    Serial.print("   |   z = "); 
+    Serial.println(rotation[2]);
+    
+    return rotation; 
+}
+
+float* get_quaternion() {
+    
+    imu::Quaternion quat = bno.getQuat();
+
+    quaternion[0] = quat.x();
+    quaternion[1] = quat.y();
+    quaternion[2] = quat.z();
+    quaternion[3] = quat.w(); 
+
+    Serial.print("Quaternions: ");
+    Serial.print("x = ");
+    Serial.print(quaternion[0]);
+    Serial.print("   |   y = "); 
+    Serial.print(quaternion[1]);
+    Serial.print("   |   z = "); 
+    Serial.print(quaternion[2]);
+    Serial.print("   |   w = "); 
+    Serial.println(quaternion[3]);
+
+    return quaternion;
+}
+
+// Temperature -> °C
+float get_temperature() {
+    
+    sensors_event_t temp_event;
+    bmp_temp->getEvent(&temp_event);
+
+    Serial.print("Temperatura: "); 
+    Serial.println(temp_event.temperature); 
+    return temp_event.temperature; 
+}
+
+// Pressure -> hPa
+float get_pressure() {
+
+    sensors_event_t pressure_event;
+    bmp_pressure->getEvent(&pressure_event);
+
+    return pressure_event.pressure; 
+}
+

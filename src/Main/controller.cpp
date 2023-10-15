@@ -21,12 +21,12 @@ float Controller::output(float setpoint, float current_value){
     delta_time = (double)(time - last_time)/1000;
     last_error = error;
     last_time = time;
-    if(setpoint_ == 0){
-        output_value =  current_value_ + proportional() + derivative() ;
-    }else{
-        output_value =  current_value_ +proportional() + integrative() + derivative();
-    }
+    // if(setpoint_ == 0){
+    //     output_value =  current_value_ + proportional() + derivative() ;
+    // }else{
+    // }
 
+    output_value =  proportional() + integrative() + derivative();
     // output_value = saturation(output_value,1000);
     return output_value;
 }
@@ -57,26 +57,26 @@ float Controller::derivative(){
 
 void Controller::debug(){
     
-    Serial.print(" |delta_time: ");
-    Serial.print(delta_time);
+    // Serial.print(" |delta_time: ");
+    // Serial.print(delta_time);
 
-    Serial.print(" |input_values: ");
+    Serial.print("|input_values: ");
     Serial.print(setpoint_);
-    Serial.print(" |current_values: ");
+    Serial.print("|current_values: ");
     Serial.print(current_value_);
 
-    Serial.print(" ||error: ");
+    Serial.print("||error: ");
     Serial.print(error);
-    Serial.print(" |P: ");
+    Serial.print("|P: ");
     Serial.print(proportional());
-    Serial.print(" |I: ");
+    Serial.print("|I: ");
     Serial.print(integrative());
-    Serial.print(" |D: ");
+    Serial.print("|D: ");
     Serial.print(derivative());
 
-    Serial.print(" |output_value: ");
+    Serial.print("|output_value: ");
     Serial.print(output_value);
-    Serial.println("");
+    // Serial.println("");
 
 }
 
