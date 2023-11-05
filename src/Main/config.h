@@ -18,13 +18,6 @@
 // --------------------------- SATURANTION
 #define PWM_SATURATION 800
 
-#define VEL_SATURATION_ 80 //[-100,100]
-#define MIN_VALUE  1000 ;
-#define MAX_VALUE  2000 
-#define STOP_VALUE  1500
-
-
-
 // --------------------------- ENCODERS 
 #define EN_A1 39
 #define EN_A2 36
@@ -40,7 +33,7 @@
 #define L  0.145 
 #define R 0.0325
 
-#define MAX_SPEED 20 
-#define MIN_SPEED 0 
+#define MAX_SPEED 10.00
+#define MIN_SPEED 0
 
-#define MAX_PWM 1023
+#define MAX_PWM 1023.00

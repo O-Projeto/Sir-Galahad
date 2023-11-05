@@ -24,29 +24,40 @@ void motor::setup()
     ledcAttachPin(IN_B, CHANNEL_B);
 }
 
-void motor::cmd(int speed )
+void motor::cmd(float speed)
 {
-    PWM = map(speed,-MAX_SPEED,MAX_SPEED,-MAX_PWM,MAX_PWM); 
-
-
-    // --------------------------- saturation
-    if (PWM >= SATURATION){
-        PWM = SATURATION;
+    if (speed > MAX_SPEED){
+        speed = MAX_SPEED; 
     }
 
-    if (PWM <= -SATURATION){
-        PWM = -SATURATION;
+    if (speed < -10.00){
+        Serial.print("AQUI");
+        speed = -MAX_SPEED;
     }
 
+    PWM = (speed - (- MAX_SPEED)) * (MAX_PWM - (-MAX_PWM)) / (MAX_SPEED - (-MAX_SPEED)) + (-MAX_PWM);
+
+    if (abs(PWM) < 400 && PWM > 0) {
+        PWM = 400; 
+    }
+
+    if (abs(PWM) < 400 && PWM < 0) {
+        PWM = -400; 
+    }
+
+    int PWM_ = round(PWM); 
+
+    Serial.print("-->  PWM MAX É "); 
+    Serial.println(PWM_); 
 
     // --------------------------- cmd_vel
     if (PWM > 0){
-        ledcWrite(CHANNEL_A, PWM);
+        ledcWrite(CHANNEL_A, PWM_);
         digitalWrite(IN_B, LOW); 
     }
 
     if (PWM < 0){
-        ledcWrite(CHANNEL_B, abs(PWM));
+        ledcWrite(CHANNEL_B, abs(PWM_));
         digitalWrite(IN_A, LOW);
     }
 

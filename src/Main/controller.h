@@ -30,7 +30,7 @@ public:
     
     void debug();
 
-    Controller(float kp, float kd, float ki);
+    Controller(float kp, float ki, float kd);
     float output(float input_value, float current_value);
 
 };

@@ -18,7 +18,7 @@
 motor motor_right(M1_IN1, M1_IN2, CHANNEL_M1_IN1, CHANNEL_M1_IN2); 
 motor motor_left(M2_IN1, M2_IN2, CHANNEL_M2_IN1, CHANNEL_M2_IN2);
 
-Controller balancer_controller(1,0,0); 
+Controller balancer_controller(0.7,0.001,0.008); 
 
 ESP32Encoder left_encoder; 
 ESP32Encoder right_encoder; 
@@ -60,23 +60,23 @@ void loop() {
   left_speed = cinematic_left(linear_robot,angular_robot);
   right_speed =  cinematic_right(linear_robot,angular_robot);
   
-
   motor_left.cmd(left_speed);
   motor_right.cmd(right_speed);
 
+  Serial.println(linear_robot);
+  Serial.println(left_speed); 
+  // odom(left_encoder.getCount(), right_encoder.getCount(), imu_orientation[0]);
 
-  // odom(left_encoder.getCount(), right_encoder.getCount(), imu_orientation[3]);
-
-  debug();
+  // debug();
 }
 
 
 void debug(){
     Serial.print("Euler:");
-    Serial.print(orientation[0]);
-    Serial.print(", ");
-    Serial.print(orientation[1]);
-    Serial.print(", ");
+    // Serial.print(orientation[0]);
+    // Serial.print(", ");
+    // Serial.print(orientation[1]);
+    // Serial.print(", ");
     Serial.print(orientation[2]);
 
     balancer_controller.debug();

@@ -18,7 +18,7 @@ float Controller::output(float setpoint, float current_value){
     current_value_ = current_value;
     error =  setpoint_ - current_value_ ;
     time = millis();
-    delta_time = (double)(time - last_time)/1000;
+    delta_time = (double)(time - last_time)/10000;
     last_error = error;
     last_time = time;
     // if(setpoint_ == 0){
