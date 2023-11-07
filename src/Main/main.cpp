@@ -23,19 +23,19 @@ Controller balancer_controller(0.7,0.001,0.008);
 ESP32Encoder left_encoder; 
 ESP32Encoder right_encoder; 
 
-const float SETPOINT_theta= -PI/2; 
+float SETPOINT_theta= -PI/2; 
 const float angular_robot = 0 ;
 float linear_robot = 0 ; 
 
 float left_speed, right_speed ;
-
+String message = String(7);
 
 float imu_orientation;
 
-void debug();
+// void debug();
 
 void setup() {
-
+  pinMode(2, OUTPUT);
   Serial.begin(115200);
 
   // encoder setup
@@ -52,6 +52,18 @@ void setup() {
 }
 
 void loop() {
+  while(Serial.available()) {
+    message = Serial.readString();
+    for (int i = 0; i < message.length(); i++) {
+      Serial.write(message[i]);
+    }
+    if (message == "Forward") {
+      SETPOINT_theta = -1.48353;
+      digitalWrite(2,HIGH);
+    } else {
+      SETPOINT_theta= -PI/2;
+    }
+  }
 
   float* imu_orientation = get_euler_angles(); 
 
@@ -63,8 +75,8 @@ void loop() {
   motor_left.cmd(left_speed);
   motor_right.cmd(right_speed);
 
-  Serial.println(linear_robot);
-  Serial.println(left_speed); 
+  // Serial.println(linear_robot);
+  // Serial.println(left_speed); 
   // odom(left_encoder.getCount(), right_encoder.getCount(), imu_orientation[0]);
 
   // debug();
@@ -72,21 +84,21 @@ void loop() {
 
 
 void debug(){
-    Serial.print("Euler:");
+    // Serial.print("Euler:");
     // Serial.print(orientation[0]);
     // Serial.print(", ");
     // Serial.print(orientation[1]);
     // Serial.print(", ");
-    Serial.print(orientation[2]);
+    // Serial.print(orientation[2]);
 
     balancer_controller.debug();
 
-    Serial.print("|L: ");
-    Serial.print(motor_left.PWM);
-    Serial.print("_R: ");
-    Serial.print(motor_right.PWM);
+    // Serial.print("|L: ");
+    // Serial.print(motor_left.PWM);
+    // Serial.print("_R: ");
+    // Serial.print(motor_right.PWM);
   
-    Serial.println("");
+    // Serial.println("");
 
 
 

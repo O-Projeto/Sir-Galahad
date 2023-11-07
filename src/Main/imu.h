@@ -36,28 +36,28 @@ void bno_setup() {
     /* Initialise the sensor */
     while (!bno.begin())
     {
-        Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+        // Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
         // while (1);
     }
     digitalWrite(LED_BUILD_IN, HIGH); 
 
     uint8_t system, gyro, accel, mag = 0;
     bno.getCalibration(&system, &gyro, &accel, &mag);
-    Serial.println();
-    Serial.print("Calibration: Sys=");
-    Serial.print(system);
-    Serial.print(" Gyro=");
-    Serial.print(gyro);
-    Serial.print(" Accel=");
-    Serial.print(accel);
-    Serial.print(" Mag=");
-    Serial.println(mag);
+    // Serial.println();
+    // Serial.print("Calibration: Sys=");
+    // Serial.print(system);
+    // Serial.print(" Gyro=");
+    // Serial.print(gyro);
+    // Serial.print(" Accel=");
+    // Serial.print(accel);
+    // Serial.print(" Mag=");
+    // Serial.println(mag);
 }
 
 void bmp_setup() {
     /* Initialise the sensor */
     while (!bmp.begin()){
-        Serial.println("Ooops, no BMP280 detected ... Check your wiring or I2C ADDR!");
+        // Serial.println("Ooops, no BMP280 detected ... Check your wiring or I2C ADDR!");
     } 
     digitalWrite(LED_BUILD_IN, HIGH); 
 
@@ -81,13 +81,13 @@ float* get_linear_acceleration_with_gravity(){
     acceleration_g[1] = event.acceleration.y;
     acceleration_g[2] = event.acceleration.z;
 
-    Serial.print("Aceleração (considerando gravidade): ");
-    Serial.print("x = ");
-    Serial.print(acceleration_g[0]);
-    Serial.print("   |   y = "); 
-    Serial.print(acceleration_g[1]);
-    Serial.print("   |   z = "); 
-    Serial.println(acceleration_g[2]);
+    // Serial.print("Aceleração (considerando gravidade): ");
+    // Serial.print("x = ");
+    // Serial.print(acceleration_g[0]);
+    // Serial.print("   |   y = "); 
+    // Serial.print(acceleration_g[1]);
+    // Serial.print("   |   z = "); 
+    // Serial.println(acceleration_g[2]);
   
     return acceleration_g; 
 }
@@ -103,13 +103,13 @@ float* get_linear_accel_without_gravity(){
     acceleration[1] = event.acceleration.y;
     acceleration[2] = event.acceleration.z;
 
-    Serial.print("Aceleração (considerando gravidade): ");
-    Serial.print("x = ");
-    Serial.print(acceleration[0]);
-    Serial.print("   |   y = "); 
-    Serial.print(acceleration[1]);
-    Serial.print("   |   z = "); 
-    Serial.println(acceleration[2]);
+    // Serial.print("Aceleração (considerando gravidade): ");
+    // Serial.print("x = ");
+    // Serial.print(acceleration[0]);
+    // Serial.print("   |   y = "); 
+    // Serial.print(acceleration[1]);
+    // Serial.print("   |   z = "); 
+    // Serial.println(acceleration[2]);
   
     return acceleration; 
 }
@@ -147,13 +147,13 @@ float* get_magnetic_orientation() {
     magnetic[1] = event.magnetic.y;
     magnetic[2] = event.magnetic.z;
 
-    Serial.print("Orientação campo magnetico: ");
-    Serial.print("x = ");
-    Serial.print(magnetic[0]);
-    Serial.print("   |   y = "); 
-    Serial.print(magnetic[1]);
-    Serial.print("   |   z = "); 
-    Serial.println(magnetic[2]);
+    // Serial.print("Orientação campo magnetico: ");
+    // Serial.print("x = ");
+    // Serial.print(magnetic[0]);
+    // Serial.print("   |   y = "); 
+    // Serial.print(magnetic[1]);
+    // Serial.print("   |   z = "); 
+    // Serial.println(magnetic[2]);
 
     return magnetic; 
 }
@@ -169,13 +169,13 @@ float* get_angular_vel(){
     rotation[1] = event.gyro.y;
     rotation[2] = event.gyro.z;
 
-    Serial.print("Velocidade angular: ");
-    Serial.print("x = ");
-    Serial.print(rotation[0]);
-    Serial.print("   |   y = "); 
-    Serial.print(rotation[1]);
-    Serial.print("   |   z = "); 
-    Serial.println(rotation[2]);
+    // Serial.print("Velocidade angular: ");
+    // Serial.print("x = ");
+    // Serial.print(rotation[0]);
+    // Serial.print("   |   y = "); 
+    // Serial.print(rotation[1]);
+    // Serial.print("   |   z = "); 
+    // Serial.println(rotation[2]);
     
     return rotation; 
 }
@@ -189,15 +189,15 @@ float* get_quaternion() {
     quaternion[2] = quat.z();
     quaternion[3] = quat.w(); 
 
-    Serial.print("Quaternions: ");
-    Serial.print("x = ");
-    Serial.print(quaternion[0]);
-    Serial.print("   |   y = "); 
-    Serial.print(quaternion[1]);
-    Serial.print("   |   z = "); 
-    Serial.print(quaternion[2]);
-    Serial.print("   |   w = "); 
-    Serial.println(quaternion[3]);
+    // Serial.print("Quaternions: ");
+    // Serial.print("x = ");
+    // Serial.print(quaternion[0]);
+    // Serial.print("   |   y = "); 
+    // Serial.print(quaternion[1]);
+    // Serial.print("   |   z = "); 
+    // Serial.print(quaternion[2]);
+    // Serial.print("   |   w = "); 
+    // Serial.println(quaternion[3]);
 
     return quaternion;
 }
@@ -208,8 +208,8 @@ float get_temperature() {
     sensors_event_t temp_event;
     bmp_temp->getEvent(&temp_event);
 
-    Serial.print("Temperatura: "); 
-    Serial.println(temp_event.temperature); 
+    // Serial.print("Temperatura: "); 
+    // Serial.println(temp_event.temperature); 
     return temp_event.temperature; 
 }
 

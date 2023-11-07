@@ -47,8 +47,8 @@ void motor::cmd(float speed)
 
     int PWM_ = round(PWM); 
 
-    Serial.print("-->  PWM MAX É "); 
-    Serial.println(PWM_); 
+    // Serial.print("-->  PWM MAX É "); 
+    // Serial.println(PWM_); 
 
     // --------------------------- cmd_vel
     if (PWM > 0){
