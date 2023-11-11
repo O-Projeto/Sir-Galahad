@@ -4,12 +4,13 @@
 
 class Controller
 {
-private:
+
+
+public:
     float proportional();
     float integrative();
     float derivative();
-
-public:
+    
     float setpoint_;
     float current_value_;
     

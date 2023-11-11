@@ -12,9 +12,6 @@
 #include <ESP32Encoder.h>
 
 
-
-#include "Main/imu.h"
-
 motor motor_right(M1_IN1, M1_IN2, CHANNEL_M1_IN1, CHANNEL_M1_IN2); 
 motor motor_left(M2_IN1, M2_IN2, CHANNEL_M2_IN1, CHANNEL_M2_IN2);
 
@@ -62,11 +59,11 @@ void setup() {
 
 void loop() {
 
-  while(Serial.available()==0){
+  if(Serial.available()){
 
+    SETPOINT_theta = Serial.parseFloat();
   }
 
-  SETPOINT_theta = Serial.parseFloat  ();
 
   float* imu_orientation = get_euler_angles(); 
 
@@ -78,16 +75,32 @@ void loop() {
   motor_left.cmd(left_speed);
   motor_right.cmd(right_speed);
 
-  Serial.println("");
-  Serial.print("left vel: "); 
-  Serial.print(left_speed);
-  Serial.print(" | right vel: ");
-  Serial.print(right_speed); 
-  Serial.println("");
-  // odom(left_encoder.getCount(), right_encoder.getCount(), imu_orientation[0]);
+  // Serial.println("");
+  // Serial.print("left vel: "); 
+  // Serial.print(left_speed);
+  // Serial.print(" | right vel: ");
+  // Serial.print(right_speed); 
+  // Serial.println("");
+  // // odom(left_encoder.getCount(), right_encoder.getCount(), imu_orientation[0]);
 
   debug();
-  SerialBT.println(SETPOINT_theta);
+  SerialBT.print(" |SP: ");
+  SerialBT.print(balancer_controller.setpoint_);
+  SerialBT.print(" |CV: ");
+  SerialBT.print(balancer_controller.current_value_);
+
+  SerialBT.print(" ||error: ");
+  SerialBT.print(balancer_controller.error);
+  SerialBT.print(" |P: ");
+  SerialBT.print(balancer_controller.proportional());
+  SerialBT.print(" |I: ");
+  SerialBT.print(balancer_controller.integrative());
+  SerialBT.print("|D: ");
+  SerialBT.print(balancer_controller.derivative());
+
+  SerialBT.print(" |OV: ");
+  SerialBT.print(balancer_controller.output_value);
+  SerialBT.println("");
 }
 
 
@@ -107,8 +120,5 @@ void debug(){
     Serial.print(motor_right.PWM);
   
     Serial.println("");
-
-
-
 
 }

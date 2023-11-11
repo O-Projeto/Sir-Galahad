@@ -31,7 +31,7 @@ void motor::cmd(float speed)
     }
 
     if (speed < -10.00){
-        Serial.print("menor que vel min");
+        // Serial.print("menor que vel min");
         speed = -MAX_SPEED;
     }
 
