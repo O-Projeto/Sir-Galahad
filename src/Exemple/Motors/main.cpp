@@ -14,6 +14,8 @@ void setup() {
     digitalWrite(M2_IN1, HIGH); 
     digitalWrite(M2_IN2, LOW); 
 
+    Serial.begin(115200); // Set the baud rate to match the Raspberry Pi
+
 
     // ledcSetup(CHANNEL_M1_IN1, FREQUENCY, RESOLUTION); 
     // ledcSetup(CHANNEL_M1_IN2, FREQUENCY, RESOLUTION); 

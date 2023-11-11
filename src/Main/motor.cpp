@@ -31,24 +31,25 @@ void motor::cmd(float speed)
     }
 
     if (speed < -10.00){
-        Serial.print("AQUI");
+        Serial.print("menor que vel min");
         speed = -MAX_SPEED;
     }
 
-    PWM = (speed - (- MAX_SPEED)) * (MAX_PWM - (-MAX_PWM)) / (MAX_SPEED - (-MAX_SPEED)) + (-MAX_PWM);
+    PWM = speed*(MAX_PWM/MAX_SPEED); 
+    // Serial.println(map(speed, MIN_SPEED, MAX_SPEED, MIN_PWM, MAX_PWM));
 
-    if (abs(PWM) < 400 && PWM > 0) {
-        PWM = 400; 
-    }
+    // if (abs(PWM) < 400 && PWM > 0) {
+    //     PWM = 400; 
+    // }
 
-    if (abs(PWM) < 400 && PWM < 0) {
-        PWM = -400; 
-    }
+    // if (abs(PWM) < 400 && PWM < 0) {
+    //     PWM = -400; 
+    // }
 
     int PWM_ = round(PWM); 
 
-    Serial.print("-->  PWM MAX É "); 
-    Serial.println(PWM_); 
+    // Serial.print("-->  PWM É "); 
+    // Serial.println(PWM_); 
 
     // --------------------------- cmd_vel
     if (PWM > 0){

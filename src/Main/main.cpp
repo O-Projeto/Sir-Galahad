@@ -18,7 +18,7 @@
 motor motor_right(M1_IN1, M1_IN2, CHANNEL_M1_IN1, CHANNEL_M1_IN2); 
 motor motor_left(M2_IN1, M2_IN2, CHANNEL_M2_IN1, CHANNEL_M2_IN2);
 
-Controller balancer_controller(0.7,0.001,0.008); 
+Controller balancer_controller(3,6,3); 
 
 ESP32Encoder left_encoder; 
 ESP32Encoder right_encoder; 
@@ -36,7 +36,7 @@ void debug();
 
 void setup() {
 
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   // encoder setup
   ESP32Encoder::useInternalWeakPullResistors=UP; 
@@ -63,11 +63,15 @@ void loop() {
   motor_left.cmd(left_speed);
   motor_right.cmd(right_speed);
 
-  Serial.println(linear_robot);
-  Serial.println(left_speed); 
+  Serial.println("");
+  Serial.print("left vel: "); 
+  Serial.print(left_speed);
+  Serial.print(" | right vel: ");
+  Serial.print(right_speed); 
+  Serial.println("");
   // odom(left_encoder.getCount(), right_encoder.getCount(), imu_orientation[0]);
 
-  // debug();
+  debug();
 }
 
 

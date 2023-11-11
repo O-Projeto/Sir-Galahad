@@ -31,9 +31,10 @@
 
 // --------------------------- ODOMETRY
 #define L  0.145 
-#define R 0.0325
+#define R  0.325
 
-#define MAX_SPEED 10.00
-#define MIN_SPEED 0
+#define MAX_SPEED 5.00f
+#define MIN_SPEED -5.00f
 
-#define MAX_PWM 1023.00
+#define MAX_PWM 1023.00f
+#define MIN_PWM -1023.00f
