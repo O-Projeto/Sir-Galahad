@@ -13,7 +13,7 @@
 
 
 
-// #include "Main/imu.h"
+#include "Main/imu.h"
 
 motor motor_right(M1_IN1, M1_IN2, CHANNEL_M1_IN1, CHANNEL_M1_IN2); 
 motor motor_left(M2_IN1, M2_IN2, CHANNEL_M2_IN1, CHANNEL_M2_IN2);
@@ -23,7 +23,7 @@ Controller balancer_controller(3,6,3);
 ESP32Encoder left_encoder; 
 ESP32Encoder right_encoder; 
 
-const float SETPOINT_theta= -PI/2; 
+float SETPOINT_theta= -PI/2; 
 const float angular_robot = 0 ;
 float linear_robot = 0 ; 
 
@@ -34,9 +34,18 @@ float imu_orientation;
 
 void debug();
 
+#include "BluetoothSerial.h"
+
+#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+#endif
+
+BluetoothSerial SerialBT;
+
 void setup() {
 
   Serial.begin(9600);
+  SerialBT.begin("ESP32test"); //Bluetooth device name
 
   // encoder setup
   ESP32Encoder::useInternalWeakPullResistors=UP; 
@@ -52,6 +61,12 @@ void setup() {
 }
 
 void loop() {
+
+  while(Serial.available()==0){
+
+  }
+
+  SETPOINT_theta = Serial.parseFloat  ();
 
   float* imu_orientation = get_euler_angles(); 
 
@@ -72,6 +87,7 @@ void loop() {
   // odom(left_encoder.getCount(), right_encoder.getCount(), imu_orientation[0]);
 
   debug();
+  SerialBT.println(SETPOINT_theta);
 }
 
 
