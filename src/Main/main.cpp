@@ -11,10 +11,6 @@
 // auxiliary libraries 
 #include <ESP32Encoder.h>
 
-
-
-#include "Main/imu.h"
-
 motor motor_right(M1_IN1, M1_IN2, CHANNEL_M1_IN1, CHANNEL_M1_IN2); 
 motor motor_left(M2_IN1, M2_IN2, CHANNEL_M2_IN1, CHANNEL_M2_IN2);
 
