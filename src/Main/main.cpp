@@ -15,7 +15,7 @@
 motor motor_right(M1_IN1, M1_IN2, CHANNEL_M1_IN1, CHANNEL_M1_IN2); 
 motor motor_left(M2_IN1, M2_IN2, CHANNEL_M2_IN1, CHANNEL_M2_IN2);
 
-Controller balancer_controller(3,6,3); 
+Controller balancer_controller(0,0,1.5); 
 
 ESP32Encoder left_encoder; 
 ESP32Encoder right_encoder; 
@@ -30,6 +30,8 @@ float left_speed, right_speed ;
 float imu_orientation;
 
 void debug();
+void blu_debug();
+
 
 #include "BluetoothSerial.h"
 
@@ -83,7 +85,15 @@ void loop() {
   // Serial.println("");
   // // odom(left_encoder.getCount(), right_encoder.getCount(), imu_orientation[0]);
 
-  debug();
+  // debug();
+  blu_debug();
+
+
+
+}
+
+void blu_debug(){
+
   SerialBT.print(" |SP: ");
   SerialBT.print(balancer_controller.setpoint_);
   SerialBT.print(" |CV: ");
@@ -101,9 +111,8 @@ void loop() {
   SerialBT.print(" |OV: ");
   SerialBT.print(balancer_controller.output_value);
   SerialBT.println("");
+
 }
-
-
 void debug(){
     Serial.print("Euler:");
     // Serial.print(orientation[0]);

@@ -9,17 +9,17 @@ Controller::Controller(float kp,float ki, float kd)
     time = 0 ; 
     last_time = 0 ;
     delta_time= 0 ;
-    last_error = 0;
     error = 0;
+    last_error = 0;
 }
 
 float Controller::output(float setpoint, float current_value){
     setpoint_ = setpoint;
     current_value_ = current_value;
+    last_error = error;
     error =  setpoint_ - current_value_ ;
     time = millis();
     delta_time = (double)(time - last_time)/10000;
-    last_error = error;
     last_time = time;
     // if(setpoint_ == 0){
     //     output_value =  current_value_ + proportional() + derivative() ;
@@ -28,6 +28,7 @@ float Controller::output(float setpoint, float current_value){
 
     output_value =  proportional() + integrative() + derivative();
     // output_value = saturation(output_value,1000);
+  
     return output_value;
 }
 
@@ -45,12 +46,14 @@ float Controller::integrative(){
 }
 
 float Controller::derivative(){
+   
     if (last_error - error!= 0){
         delta_error = (last_error - error)/delta_time;
     }
     else {
         delta_error = 0; 
     }
+    
     return delta_error*KD;
 
 }
