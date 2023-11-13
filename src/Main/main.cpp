@@ -15,12 +15,12 @@
 motor motor_right(M1_IN1, M1_IN2, CHANNEL_M1_IN1, CHANNEL_M1_IN2); 
 motor motor_left(M2_IN1, M2_IN2, CHANNEL_M2_IN1, CHANNEL_M2_IN2);
 
-Controller balancer_controller(0,0,1.5); 
+Controller balancer_controller(0.03,0.035,0.0003); 
 
 ESP32Encoder left_encoder; 
 ESP32Encoder right_encoder; 
 
-float SETPOINT_theta= -PI/2; 
+float SETPOINT_theta= 90.00; 
 const float angular_robot = 0 ;
 float linear_robot = 0 ; 
 
@@ -43,7 +43,7 @@ BluetoothSerial SerialBT;
 
 void setup() {
 
-  Serial.begin(9600);
+  // Serial.begin(9600);
   SerialBT.begin("ESP32test"); //Bluetooth device name
 
   // encoder setup
