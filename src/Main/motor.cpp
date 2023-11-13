@@ -26,17 +26,20 @@ void motor::setup()
 
 void motor::cmd(float speed)
 {
+    Serial.print("a velocidade é: "); 
+    Serial.println(speed); 
+
     if (speed > MAX_SPEED){
         speed = MAX_SPEED; 
     }
 
     if (speed < -10.00){
-        // Serial.print("menor que vel min");
         speed = -MAX_SPEED;
     }
 
     PWM = speed*(MAX_PWM/MAX_SPEED); 
-    // Serial.println(map(speed, MIN_SPEED, MAX_SPEED, MIN_PWM, MAX_PWM));
+    Serial.print("usando a função map: "); 
+    Serial.println(map(speed, MIN_SPEED, MAX_SPEED, MIN_PWM, MAX_PWM));
 
     // if (abs(PWM) < 400 && PWM > 0) {
     //     PWM = 400; 
@@ -46,19 +49,17 @@ void motor::cmd(float speed)
     //     PWM = -400; 
     // }
 
-    int PWM_ = round(PWM); 
-
-    // Serial.print("-->  PWM É "); 
-    // Serial.println(PWM_); 
+    Serial.print("-->  PWM É "); 
+    Serial.println(PWM); 
 
     // --------------------------- cmd_vel
-    if (PWM > 0){
-        ledcWrite(CHANNEL_A, PWM_);
+    if (PWM < 0){
+        ledcWrite(CHANNEL_A, abs(PWM));
         digitalWrite(IN_B, LOW); 
     }
 
-    if (PWM < 0){
-        ledcWrite(CHANNEL_B, abs(PWM_));
+    if (PWM > 0){
+        ledcWrite(CHANNEL_B, abs(PWM));
         digitalWrite(IN_A, LOW);
     }
 
