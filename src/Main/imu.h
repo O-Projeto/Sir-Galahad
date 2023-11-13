@@ -121,9 +121,9 @@ float* get_euler_angles(){
     sensors_event_t orientationData;
     bno.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
 
-    orientation[0] = orientationData.orientation.x * (3.141592 / 180);
-    orientation[1] = orientationData.orientation.y * (3.141592 / 180);
-    orientation[2] = orientationData.orientation.z * (3.141592 / 180);
+    orientation[0] = - orientationData.orientation.x;
+    orientation[1] = - orientationData.orientation.y;
+    orientation[2] = - orientationData.orientation.z;
 
     // Serial.print("Ângulos de euler: ");
     // Serial.print("pitch = ");
