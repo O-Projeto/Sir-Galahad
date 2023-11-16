@@ -15,12 +15,20 @@
 motor motor_right(M1_IN1, M1_IN2, CHANNEL_M1_IN1, CHANNEL_M1_IN2); 
 motor motor_left(M2_IN1, M2_IN2, CHANNEL_M2_IN1, CHANNEL_M2_IN2);
 
-Controller balancer_controller(0.03,0.035,0.0003); 
+Controller zone_one_controller(0.1,0.015,0.00015); 
+Controller zone_two_controller(0.02,0.005,0.0001);
+Controller zone_three_controller(0.02, 0.005, 0.0001); 
+
+// gain scheduled
+// zone 1 : 80° a 100° 
+// zone 2 : 115° a 100°
+// zone 3 : 80° a 65°
 
 ESP32Encoder left_encoder; 
 ESP32Encoder right_encoder; 
 
 float SETPOINT_theta= 90.00; 
+float robot_pitch = 0.0; 
 const float angular_robot = 0 ;
 float linear_robot = 0 ; 
 
@@ -29,8 +37,9 @@ float left_speed, right_speed ;
 
 float imu_orientation;
 
-void debug();
-void blu_debug();
+void blu_debug_z1();
+void blu_debug_z2(); 
+void blu_debug_z3(); 
 
 
 #include "BluetoothSerial.h"
@@ -68,8 +77,28 @@ void loop() {
 
 
   float* imu_orientation = get_euler_angles(); 
+  robot_pitch = imu_orientation[2]; 
 
-  linear_robot = balancer_controller.output(SETPOINT_theta,imu_orientation[2]);
+  if (robot_pitch > 75 && robot_pitch < 105){
+
+    linear_robot = zone_one_controller.output(SETPOINT_theta,robot_pitch);
+    SerialBT.println("-------------------ZONA 1-------------------------");
+    blu_debug_z1();
+  }
+
+  if (robot_pitch > 105){
+    
+    linear_robot = zone_two_controller.output(SETPOINT_theta, robot_pitch); 
+    SerialBT.println("-------------------ZONA 2-------------------------");
+    blu_debug_z2();
+  }
+
+  if (robot_pitch < 75){
+    
+    linear_robot = zone_three_controller.output(SETPOINT_theta, robot_pitch); 
+    SerialBT.println("-------------------ZONA 3-------------------------");
+    blu_debug_z3(); 
+  }
 
   left_speed = cinematic_left(linear_robot,angular_robot);
   right_speed =  cinematic_right(linear_robot,angular_robot);
@@ -86,48 +115,71 @@ void loop() {
   // // odom(left_encoder.getCount(), right_encoder.getCount(), imu_orientation[0]);
 
   // debug();
-  blu_debug();
-
-
+  // blu_debug();
 
 }
 
-void blu_debug(){
+void blu_debug_z2(){
 
   SerialBT.print(" |SP: ");
-  SerialBT.print(balancer_controller.setpoint_);
+  SerialBT.print(zone_two_controller.setpoint_);
   SerialBT.print(" |CV: ");
-  SerialBT.print(balancer_controller.current_value_);
+  SerialBT.print(zone_two_controller.current_value_);
 
   SerialBT.print(" ||error: ");
-  SerialBT.print(balancer_controller.error);
+  SerialBT.print(zone_two_controller.error);
   SerialBT.print(" |P: ");
-  SerialBT.print(balancer_controller.proportional());
+  SerialBT.print(zone_two_controller.proportional());
   SerialBT.print(" |I: ");
-  SerialBT.print(balancer_controller.integrative());
+  SerialBT.print(zone_two_controller.integrative());
   SerialBT.print("|D: ");
-  SerialBT.print(balancer_controller.derivative());
+  SerialBT.print(zone_two_controller.derivative());
 
   SerialBT.print(" |OV: ");
-  SerialBT.print(balancer_controller.output_value);
+  SerialBT.print(zone_two_controller.output_value);
   SerialBT.println("");
 
 }
-void debug(){
-    Serial.print("Euler:");
-    // Serial.print(orientation[0]);
-    // Serial.print(", ");
-    // Serial.print(orientation[1]);
-    // Serial.print(", ");
-    Serial.print(orientation[2]);
 
-    balancer_controller.debug();
+void blu_debug_z1(){
 
-    Serial.print("|L: ");
-    Serial.print(motor_left.PWM);
-    Serial.print("_R: ");
-    Serial.print(motor_right.PWM);
-  
-    Serial.println("");
+  SerialBT.print(" |SP: ");
+  SerialBT.print(zone_one_controller.setpoint_);
+  SerialBT.print(" |CV: ");
+  SerialBT.print(zone_one_controller.current_value_);
 
+  SerialBT.print(" ||error: ");
+  SerialBT.print(zone_one_controller.error);
+  SerialBT.print(" |P: ");
+  SerialBT.print(zone_one_controller.proportional());
+  SerialBT.print(" |I: ");
+  SerialBT.print(zone_one_controller.integrative());
+  SerialBT.print("|D: ");
+  SerialBT.print(zone_one_controller.derivative());
+
+  SerialBT.print(" |OV: ");
+  SerialBT.print(zone_one_controller.output_value);
+  SerialBT.println("");
+
+}
+
+void blu_debug_z3(){
+
+  SerialBT.print(" |SP: ");
+  SerialBT.print(zone_three_controller.setpoint_);
+  SerialBT.print(" |CV: ");
+  SerialBT.print(zone_three_controller.current_value_);
+
+  SerialBT.print(" ||error: ");
+  SerialBT.print(zone_three_controller.error);
+  SerialBT.print(" |P: ");
+  SerialBT.print(zone_three_controller.proportional());
+  SerialBT.print(" |I: ");
+  SerialBT.print(zone_three_controller.integrative());
+  SerialBT.print("|D: ");
+  SerialBT.print(zone_three_controller.derivative());
+
+  SerialBT.print(" |OV: ");
+  SerialBT.print(zone_three_controller.output_value);
+  SerialBT.println("");
 }
