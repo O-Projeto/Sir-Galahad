@@ -18,7 +18,7 @@
 motor motor_right(M1_IN1, M1_IN2, CHANNEL_M1_IN1, CHANNEL_M1_IN2); 
 motor motor_left(M2_IN1, M2_IN2, CHANNEL_M2_IN1, CHANNEL_M2_IN2);
 
-Controller balancer_controller(0.7,0.001,0.008); 
+Controller balancer_controller(0.9,0.001,0.008); 
 
 ESP32Encoder left_encoder; 
 ESP32Encoder right_encoder; 
@@ -52,19 +52,6 @@ void setup() {
 }
 
 void loop() {
-  while(Serial.available()) {
-    message = Serial.readString();
-    for (int i = 0; i < message.length(); i++) {
-      Serial.write(message[i]);
-    }
-    if (message == "Forward") {
-      SETPOINT_theta = -1.48353;
-      digitalWrite(2,HIGH);
-    } else {
-      SETPOINT_theta= -PI/2;
-    }
-  }
-
   float* imu_orientation = get_euler_angles(); 
 
   linear_robot = balancer_controller.output(SETPOINT_theta,imu_orientation[2]);
