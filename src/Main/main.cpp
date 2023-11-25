@@ -73,13 +73,12 @@ void loop() {
 
   if(Serial.available()){
     SETPOINT_theta = Serial.parseFloat();
-    SerialBT.println("-------------------SETPOINT-------------------------");
-    SerialBT.print(SETPOINT_theta);
-    SerialBT.println("");
   } else {
     SETPOINT_theta = STANDARD_SETPOINT;
   }
-
+  SerialBT.println("-------------------SETPOINT-------------------------");
+  SerialBT.print(SETPOINT_theta);
+  SerialBT.println("");
 
   float* imu_orientation = get_euler_angles(); 
   robot_pitch = imu_orientation[2]; 
