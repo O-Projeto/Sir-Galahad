@@ -27,7 +27,8 @@ Controller zone_three_controller(0.02, 0.005, 0.0001);
 ESP32Encoder left_encoder; 
 ESP32Encoder right_encoder; 
 
-float SETPOINT_theta= 90.00; 
+const float STANDARD_SETPOINT = 90.00;
+float SETPOINT_theta = 90.00; 
 float robot_pitch = 0.0; 
 const float angular_robot = 0 ;
 float linear_robot = 0 ; 
@@ -52,8 +53,8 @@ BluetoothSerial SerialBT;
 
 void setup() {
 
-  // Serial.begin(9600);
-  SerialBT.begin("ESP32test"); //Bluetooth device name
+  Serial.begin(115200);
+  SerialBT.begin("Galahad"); //Bluetooth device name
 
   // encoder setup
   ESP32Encoder::useInternalWeakPullResistors=UP; 
@@ -71,8 +72,11 @@ void setup() {
 void loop() {
 
   if(Serial.available()){
-
     SETPOINT_theta = Serial.parseFloat();
+    SerialBT.println("-------------------SETPOINT-------------------------");
+    SerialBT.print(SETPOINT_theta);
+  } else {
+    SETPOINT_theta = STANDARD_SETPOINT;
   }
 
 
