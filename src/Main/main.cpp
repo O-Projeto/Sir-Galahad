@@ -75,6 +75,7 @@ void loop() {
     SETPOINT_theta = Serial.parseFloat();
     SerialBT.println("-------------------SETPOINT-------------------------");
     SerialBT.print(SETPOINT_theta);
+    SerialBT.println("");
   } else {
     SETPOINT_theta = STANDARD_SETPOINT;
   }
